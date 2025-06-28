@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Budget Planner Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .auth-card {
+            flex: 1;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .income-converter {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .converter-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .converter-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .converter-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .summary-card p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .expense-tracker {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .expense-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .expense-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .expense-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .expense-item-content {
+            flex: 1;
+        }
+
+        .expense-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .goal-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #11998e;
+        }
+
+        .goal-progress {
+            width: 100%;
+            height: 10px;
+            background: #e1e5e9;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .goal-progress-bar {
+            height: 100%;
+            background: #11998e;
+            transition: width 0.3s ease;
+        }
+
+        .scenario-simulator {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scenario-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .budget-profiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .profile-card.active {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .tips-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .tip-category {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tip-category h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+
+        .tip-category ul {
+            list-style: none;
+        }
+
+        .tip-category li {
+            padding: 5px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .tip-category li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin: 15px 0;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin: 15px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .auth-section {
+                flex-direction: column;
+            }
+            
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .income-converter {
+                grid-template-columns: 1fr;
+            }
+
+            .expense-tracker {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                gap: 5px;
+            }
+
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ California Budget Planner Pro</h1>
+            <p>Complete financial management with advanced features and insights</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">🏠 Dashboard</button>
+            <button class="nav-tab" onclick="showTab('calculator')">🧮 Calculator</button>
+            <button class="nav-tab" onclick="showTab('expenses')">📊 Expenses</button>
+            <button class="nav-tab" onclick="showTab('goals')">🎯 Goals</button>
+            <button class="nav-tab" onclick="showTab('scenarios')">🔮 Scenarios</button>
+            <button class="nav-tab" onclick="showTab('profiles')">👤 Profiles</button>
+            <button class="nav-tab" onclick="showTab('reports')">📈 Reports</button>
+            <button class="nav-tab" onclick="showTab('settings')">⚙️ Settings</button>
+        </div>
+
+        <!-- User Authentication -->
+        <div id="authSection" class="auth-section">
+            <div class="card auth-card">
+                <h2>Login</h2>
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                    </div>
+                    <button class="btn" onclick="login()">Login</button>
+                </div>
+            </div>
+
+            <div class="card auth-card">
+                <h2>Register</h2>
+                <div id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" placeholder="Choose username">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" placeholder="Choose password">
+                    </div>
+                    <button class="btn btn-secondary" onclick="register()">Register</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info (hidden by default) -->
+        <div id="userInfo" class="user-info hidden">
+            <div>
+                <span>Welcome, <span id="usernameDisplay"></span>!</span>
+            </div>
+            <button class="btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Main App Content -->
+        <div id="appContent" class="hidden">
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <!-- Income Converter -->
+                <div class="card">
+                    <h2>💰 Income Converter</h2>
+                    <div class="income-converter">
+                        <div class="converter-card">
+                            <h3>Hourly Rate</h3>
+                            <div class="converter-input">
+                                <span>$</span>
+                                <input type="number" id="hourlyRate" placeholder="25.00" onchange="convertIncome('hourly')">
+                                <span>/hour</span>
+                            </div>
+                        </div>
+                        <div class="converter-card">
+                            <h3>Monthly Income</h3>
+                            <div class="converter-input">
+                                <span>$</span>
+                                <input type="number" id="monthlyIncome" placeholder="4333.33" onchange="convertIncome('monthly')">
+                                <span>/month</span>
+                            </div>
+                        </div>
+                        <div class="converter-card">
+                            <h3>Yearly Income</h3>
+                            <div class="converter-input">
+                                <span>$</span>
+                                <input type="number" id="yearlyIncome" placeholder="52000" onchange="convertIncome('yearly')">
+                                <span>/year</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Budget Overview -->
+                <div id="quickOverview" class="hidden">
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3 id="dashGrossIncome">$0</h3>
+                            <p>Gross Income</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="dashTotalTaxes">$0</h3>
+                            <p>Total Taxes</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="dashNetIncome">$0</h3>
+                            <p>Net Income</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="dashMonthlyNet">$0</h3>
+                            <p>Monthly Net</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculator Tab -->
+            <div id="calculator" class="tab-content">
+                <div class="card">
+                    <h2>📊 Budget Calculator</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label for="income">Yearly Income</label>
+                            <input type="number" id="income" placeholder="Enter yearly income">
+                        </div>
+                        <div class="form-group">
+                            <label for="filingStatus">Filing Status</label>
+                            <select id="filingStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married Filing Jointly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="county">California County</label>
+                            <select id="county">
+                                <option value="Los Angeles">Los Angeles</option>
+                                <option value="San Francisco">San Francisco</option>
+                                <option value="San Diego">San Diego</option>
+                                <option value="Orange">Orange</option>
+                                <option value="Sacramento">Sacramento</option>
+                                <option value="Riverside">Riverside</option>
+                                <option value="Alameda">Alameda</option>
+                                <option value="Santa Clara">Santa Clara</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="calculateBudget()" style="margin-top: 20px;">Calculate Budget</button>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="hidden">
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3 id="grossIncome">$0</h3>
+                            <p>Gross Income</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="totalTaxes">$0</h3>
+                            <p>Total Taxes</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="netIncome">$0</h3>
+                            <p>Net Income</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3 id="monthlyNet">$0</h3>
+                            <p>Monthly Net</p>
+                        </div>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="card">
+                            <h2>📈 Budget Breakdown</h2>
+                            <div class="chart-container">
+                                <canvas id="budgetChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2>💸 Tax Breakdown</h2>
+                            <div class="chart-container">
+                                <canvas id="taxChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Buttons -->
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportData('csv')">📊 Export CSV</button>
+                        <button class="btn btn-success" onclick="exportData('json')">📋 Export JSON</button>
+                        <button class="btn btn-success" onclick="exportData('pdf')">📄 Export PDF</button>
+                    </div>
+                </div>
+
+                <!-- Tips Section -->
+                <div id="tipsSection" class="tips-section hidden">
+                    <h2>💡 Budgeting Tips for California</h2>
+                    <div id="tipsContainer" class="tips-grid"></div>
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="expenses" class="tab-content">
+                <div class="card">
+                    <h2>📊 Expense Tracker</h2>
+                    <div class="expense-tracker">
+                        <div class="expense-form">
+                            <h3>Add New Expense</h3>
+                            <div class="form-group">
+                                <label for="expenseCategory">Category</label>
+                                <select id="expenseCategory">
+                                    <option value="housing">Housing</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="food">Food</option>
+                                    <option value="utilities">Utilities</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="expenseAmount">Amount</label>
+                                <input type="number" id="expenseAmount" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="expenseDescription">Description</label>
+                                <input type="text" id="expenseDescription" placeholder="Brief description">
+                            </div>
+                            <div class="form-group">
+                                <label for="expenseDate">Date</label>
+                                <input type="date" id="expenseDate">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="isRecurring"> Recurring Expense
+                                </label>
+                            </div>
+                            <button class="btn" onclick="addExpense()">Add Expense</button>
+                        </div>
+                        
+                        <div>
+                            <h3>Recent Expenses</h3>
+                            <div id="expenseList" class="expense-list">
+                                <!-- Expenses will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expense Summary Charts -->
+                    <div class="results-section" style="margin-top: 30px;">
+                        <div class="card">
+                            <h3>Monthly Expense Breakdown</h3>
+                            <div class="chart-container">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Spending Trends</h3>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Tab -->
+            <div id="goals" class="tab-content">
+                <div class="card">
+                    <h2>🎯 Savings Goals</h2>
+                    <div style="margin-bottom: 30px;">
+                        <button class="btn" onclick="showGoalModal()">+ Add New Goal</button>
+                    </div>
+                    <div id="goalsContainer" class="goals-grid">
+                        <!-- Goals will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenarios Tab -->
+            <div id="scenarios" class="tab-content">
+                <div class="card">
+                    <h2>🔮 What-If Scenario Simulator</h2>
+                    <div class="scenario-simulator">
+                        <h3>Adjust Your Parameters</h3>
+                        <div class="scenario-inputs">
+                            <div class="form-group">
+                                <label for="scenarioIncome">Yearly Income</label>
+                                <input type="number" id="scenarioIncome" placeholder="Current income">
+                            </div>
+                            <div class="form-group">
+                                <label for="scenarioRent">Monthly Rent</label>
+                                <input type="number" id="scenarioRent" placeholder="Current rent">
+                            </div>
+                            <div class="form-group">
+                                <label for="scenarioTransport">Transportation</label>
+                                <input type="number" id="scenarioTransport" placeholder="Monthly transport">
+                            </div>
+                            <div class="form-group">
+                                <label for="scenarioFood">Food Budget</label>
+                                <input type="number" id="scenarioFood" placeholder="Monthly food">
+                            </div>
+                            <div class="form-group">
+                                <label for="inflationRate">Inflation Rate %</label>
+                                <input type="number" id="inflationRate" placeholder="3.5" step="0.1">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="runScenario()">Run Scenario</button>
+                    </div>
+
+                    <div id="scenarioResults" class="hidden">
+                        <div class="results-section">
+                            <div class="card">
+                                <h3>Scenario Results</h3>
+                                <div class="chart-container">
+                                    <canvas id="scenarioChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h3>Impact Analysis</h3>
+                                <div id="scenarioAnalysis"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profiles Tab -->
+            <div id="profiles" class="tab-content">
+                <div class="card">
+                    <h2>👤 Budget Profiles</h2>
+                    <div style="margin-bottom: 30px;">
+                        <button class="btn" onclick="createNewProfile()">+ Create New Profile</button>
+                        <button class="btn btn-secondary" onclick="loadProfiles()">🔄 Refresh Profiles</button>
+                    </div>
+                    <div id="profilesContainer" class="budget-profiles">
+                        <!-- Profiles will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports" class="tab-content">
+                <div class="card">
+                    <h2>📈 Financial Reports</h2>
+                    <div class="form-group">
+                        <label for="reportPeriod">Report Period</label>
+                        <select id="reportPeriod" onchange="generateReport()">
+                            <option value="month">This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                            <option value="all">All Time</option>
+                        </select>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="card">
+                            <h3>Income vs Expenses</h3>
+                            <div class="chart-container">
+                                <canvas id="reportChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>Savings Progress</h3>
+                            <div class="chart-container">
+                                <canvas id="savingsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="exportReport('csv')">📊 Export Report CSV</button>
+                        <button class="btn btn-success" onclick="exportReport('pdf')">📄 Export Report PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="card">
+                    <h2>⚙️ Settings</h2>
+                    
+                    <h3>Regional Settings</h3>
+                    <div class="form-group">
+                        <label for="defaultCounty">Default County</label>
+                        <select id="defaultCounty">
+                            <option value="Los Angeles">Los Angeles</option>
+                            <option value="San Francisco">San Francisco</option>
+                            <option value="San Diego">San Diego</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Sacramento">Sacramento</option>
+                            <option value="Riverside">Riverside</option>
+                            <option value="Alameda">Alameda</option>
+                            <option value="Santa Clara">Santa Clara</option>
+                        </select>
+                    </div>
+
+                    <h3>Data Management</h3>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="backupData()">💾 Backup All Data</button>
+                        <button class="
