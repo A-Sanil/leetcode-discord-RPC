@@ -1,7 +1,7 @@
 # leetcode-discord-RPC
 
 
-#this a fun project im working on to display activity on leetcode on discord
+# this a fun project im working on to display activity on leetcode on discord
 
 # also google needs to be run in debugger mode HUGE THING so it keeps track even when not tabbed in !
 
