@@ -10,7 +10,7 @@ from tkinter import ttk, messagebox
 from pypresence import Presence
 from datetime import datetime
 
-CLIENT_ID = "758394403890003988"
+CLIENT_ID = "Enter your own discord dev app ID"
 CHROME_REMOTE_URL = "http://localhost:9222/json"
 CHECK_INTERVAL = 5
 
