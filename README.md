@@ -7,14 +7,14 @@
 
  this a fun project im working on to display activity on leetcode on discord
 
-
-current issue is bc this doesnt use an extension, I cant display the actual live actualt level of the problem ie : hard, easy, medium and I have another version with lanague if I want to fix I might drop an extension that works aswell 
+Fixed the issue with difficulty jsut gotta make an extension to read for what lanaugage is being used!
 
 if anyone could help pls drop a pull adding one cause I think discord RPC is cool
 
 # heres some pictures of it:
 
-![image](https://github.com/user-attachments/assets/d6bda6e7-b602-45bc-a879-ef1a3add4d5e)
+![image](https://github.com/user-attachments/assets/ef69868b-741b-464e-9b4c-e760a8bee9ed)
+
 
 
 
