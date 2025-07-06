@@ -16,8 +16,9 @@ if anyone could help pls drop a pull adding one cause I think discord RPC is coo
 ![image](https://github.com/user-attachments/assets/ef69868b-741b-464e-9b4c-e760a8bee9ed)
 
 
+and
 
+![image](https://github.com/user-attachments/assets/5bf4e800-3baa-4c20-ad9c-8b881ef640c9)
 
-and![image](https://github.com/user-attachments/assets/47ec1917-571d-4e63-ab20-5e288e5cc52b)
 
 
